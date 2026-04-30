@@ -2,16 +2,13 @@ import withPWAInit from "@ducanh2912/next-pwa";
 
 const withPWA = withPWAInit({
   dest: "public",
-  cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
-  reloadOnOnline: true,
-  disable: process.env.NODE_ENV === "development", // отключаем в режиме разработки, чтобы не мешал
+  disable: process.env.NODE_ENV === "development",
+  // Убрали skipWaiting и register, плагин сам разберется по дефолту
 });
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // твои другие настройки, если есть
+  // Оставляем пустым, чтобы не было конфликтов типов с экспериментальными фичами
 };
 
 export default withPWA(nextConfig);
-
