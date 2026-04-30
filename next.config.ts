@@ -1,8 +1,17 @@
-import type { NextConfig } from "next";
+import withPWAInit from "@ducanh2912/next-pwa";
 
-const nextConfig: NextConfig = {
-  /* config options here */
-  reactCompiler: true,
+const withPWA = withPWAInit({
+  dest: "public",
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
+  disable: process.env.NODE_ENV === "development", // отключаем в режиме разработки, чтобы не мешал
+});
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // твои другие настройки, если есть
 };
 
-export default nextConfig;
+export default withPWA(nextConfig);
+
