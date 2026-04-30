@@ -1,65 +1,134 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import React, { useRef, useState } from 'react';
+
+export default function RhythmShield() {
+  const audioCtx = useRef<AudioContext | null>(null);
+  const currentNodes = useRef<any[]>([]);
+  const [activeMode, setActiveMode] = useState<number | null>(null);
+
+  const initAudio = () => {
+    if (!audioCtx.current) {
+      audioCtx.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    if (audioCtx.current.state === 'suspended') audioCtx.current.resume();
+  };
+
+  const clearAudio = () => {
+    // Плавное затухание перед отключением, чтобы не было щелчка
+    currentNodes.current.forEach(node => {
+      try { node.disconnect(); } catch (e) {}
+    });
+    currentNodes.current = [];
+  };
+
+  // --- Генераторы «железа» ---
+  const createPinkNoise = (ctx: AudioContext) => {
+    const bufferSize = 4096;
+    const node = ctx.createScriptProcessor(bufferSize, 1, 1);
+    let b0=0, b1=0, b2=0, b3=0, b4=0, b5=0, b6=0;
+    node.onaudioprocess = (e) => {
+      const out = e.outputBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759; b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856; b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+        out[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
+        b6 = white * 0.115926;
+      }
+    };
+    return node;
+  };
+
+  const createBrownNoise = (ctx: AudioContext) => {
+    const bufferSize = 4096;
+    const node = ctx.createScriptProcessor(bufferSize, 1, 1);
+    let lastOut = 0.0;
+    node.onaudioprocess = (e) => {
+      const out = e.outputBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        lastOut = (lastOut + (0.02 * white)) / 1.02;
+        out[i] = lastOut * 3.5;
+      }
+    };
+    return node;
+  };
+
+  // --- РЕЖИМЫ ---
+
+  const startMode = (mode: number) => {
+    initAudio();
+    clearAudio();
+    const ctx = audioCtx.current!;
+    const mainGain = ctx.createGain();
+    mainGain.gain.setValueAtTime(0, ctx.currentTime);
+    mainGain.gain.linearRampToValueAtTime(0.8, ctx.currentTime + 2); // Плавный вход 2 сек
+
+    if (mode === 1) { // СОН (Глубокий коричневый шум)
+      const brown = createBrownNoise(ctx);
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 100;
+      brown.connect(lp); lp.connect(mainGain);
+      currentNodes.current.push(brown, lp);
+    } 
+    else if (mode === 2) { // ЩИТ (Твой барьер против города)
+      const pink = createPinkNoise(ctx);
+      const hp = ctx.createBiquadFilter();
+      hp.type = 'highpass'; hp.frequency.value = 200;
+      pink.connect(hp); hp.connect(mainGain);
+      currentNodes.current.push(pink, hp);
+    }
+    else if (mode === 3) { // РАБОТА (Бета-фокус)
+      const pink = createPinkNoise(ctx);
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass'; bp.frequency.value = 1000; bp.Q.value = 0.5;
+      pink.connect(bp); bp.connect(mainGain);
+      currentNodes.current.push(pink, bp);
+    }
+    else if (mode === 4) { // ТИШИНА (Твоя адаптивная парейдолия)
+      const brown = createBrownNoise(ctx);
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 400;
+      brown.connect(lp); lp.connect(mainGain);
+      currentNodes.current.push(brown, lp);
+    }
+
+    mainGain.connect(ctx.destination);
+    currentNodes.current.push(mainGain);
+    setActiveMode(mode);
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-[#050505] text-gray-400 flex flex-col items-center justify-center p-4 font-sans tracking-tight">
+      <div className="max-w-xs w-full space-y-6">
+        <header className="text-center mb-10">
+          <h1 className="text-xl font-extralight tracking-[0.3em] text-emerald-500 uppercase">Rhythm Shield</h1>
+          <div className="h-px w-12 bg-emerald-900 mx-auto mt-4"></div>
+        </header>
+
+        <div className="space-y-3">
+          {[
+            { id: 1, name: 'Сон', desc: 'Глубокий демпфер' },
+            { id: 2, name: 'Щит', desc: 'Городской барьер' },
+            { id: 3, name: 'Работа', desc: 'Фокус-ритм' },
+            { id: 4, name: 'Тишина', desc: 'Адаптивный покой' }
+          ].map((m) => (
+            <button key={m.id} onClick={() => startMode(m.id)}
+              className={`w-full p-5 rounded-xl border transition-all duration-700 flex flex-col items-start ${activeMode === m.id ? 'border-emerald-500 bg-emerald-500/5' : 'border-neutral-900 hover:border-neutral-700'}`}>
+              <span className={`text-sm uppercase tracking-widest ${activeMode === m.id ? 'text-emerald-400' : 'text-neutral-500'}`}>{m.name}</span>
+              <span className="text-[10px] opacity-40 uppercase mt-1">{m.desc}</span>
+            </button>
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+
+        <button onClick={() => { clearAudio(); setActiveMode(null); }}
+          className="w-full py-4 text-[10px] uppercase tracking-[0.2em] text-neutral-600 hover:text-red-900 transition-colors">
+          Сброс системы
+        </button>
+      </div>
+    </main>
   );
 }

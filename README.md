@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Rhythm Shield (Ритмический Щит) v1.0
 
-## Getting Started
+Rhythm Shield — это инструмент суверенной нейроинженерии, созданный для людей с высокой сенсорной чувствительностью (HSP). Это не просто плеер со звуками, это активный биоритмический демпфер, призванный «прикрыть ворота» (Sensory Gating) и защитить нервную систему от высокоэнтропийного хаоса мегаполиса.
 
-First, run the development server:
+🧠 Философия проекта
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+▪️ Современная среда агрессивна к HSP. Мы рассматриваем человека как систему осцилляторов. Если внешняя среда «шумит» хаотично, система уходит в перегрузку.
+▪️ Цель: Создать вокруг субъекта предсказуемую ритмическую оболочку, которая снижает когнитивную нагрузку и отключает режим «сканирования угроз».
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+🛠 Технологический стек
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+▪️ Next.js / Vercel — для мгновенного доступа и работы без лагов.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+▪️ Web Audio API — звук генерируется математически прямо в браузере. Нулевой трафик, никакой зависимости от серверов или фармы.
 
-## Learn More
+▪️ PWA — работает офлайн. Ваш щит всегда с вами, даже в бетонных бункерах метро.
 
-To learn more about Next.js, take a look at the following resources:
+📡 Режимы работы
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1) СОН (Deep Brown): Низкочастотный кокон. Глушит вибрации города.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2) ЩИТ (Pink/HP): Очистка пространства от резких звуков (сигналы, крики).
 
-## Deploy on Vercel
+3) РАБОТА (Focus): Выделенный частотный диапазон для поддержания когнитивного тонуса.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4) ТИШИНА (Adaptive): Адаптивный барьер, который «дышит» вместе с окружающей средой.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+🚫 Как убрать «Голоса из радио» (Борьба с парейдолией)
+
+Если при использовании маски ваш мозг начинает «слышать» в шуме разговоры, песни или обрывки фраз — это аудиальная парейдолия. Ваш таламус пытается найти смысл в хаосе.
+
+Инженерное решение:
+
+▪️ Смена спектра: Если слышите «голоса», переключитесь с режима ЩИТ на режим СОН. Более низкие частоты (коричневый шум) подавляют речевой диапазон (300–3000 Гц), в котором мозг привык искать паттерны.
+
+▪️ Амплитудное демпфирование: Снизьте общую громкость маски. Парейдолия часто возникает, когда сигнал слишком громкий и мозг начинает «переусиливать» его детали.
+
+▪️ Внешний фокус: Попробуйте добавить физический ритм (например, постукивание пальцем в такт маске) на 30 секунд. Это переключит мозг с «декодирования звука» на «управление моторикой», и ложные паттерны исчезнут.
+
+✊ Суверенитет
+
+▪️ Проект создан для того, чтобы человек перестал быть «единицей трафика» и вернул контроль над своим внутренним состоянием. Без медицины, без корпораций, на чистой физике.
+
+Разработано на подоконнике. Для своих.
